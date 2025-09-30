@@ -4,18 +4,23 @@ import ( // Bloque de importaciones
 	"fmt" // Paquete para imprimir por consola y formatear cadenas
 )
 
-// ===== Stack (LIFO) ===== lo voy a hacer hasta final. no se porque no funciono mi pop. lo borre luego checo
+// ===== Stack (LIFO) =====
 type Stack[T any] struct { // Definimos un tipo genérico Stack con parámetro de tipo T (cualquier tipo)
 	data []T // Usamos un slice de T para almacenar los elementos del stack
 }
 
-/* comentar para debugear otros
+// comentar para debugear otros
 func (s *Stack[T]) Push(v T) { // Método Push: inserta un elemento en la cima
 	s.data = append(s.data, v) // append agrega al final del slice, creciendo si es necesario
-} // porque no correeeee
+}
 func (s *Stack[T]) Pop() (T, bool) { // Método Pop: quita y devuelve el último elemento. bool indica éxito
-	//tengo que checar si esta en 0 y si no está vacio quitar la longitud y regresar el valor que hice pop y valor bool si se logro regresar
-	//	return v, true, es decir, el valor extraído y true
+	var zero T            // zero contendrá el valor cero para T por si el stack está vacío
+	if len(s.data) == 0 { // Si no hay elementos
+		return zero, false // Devolvemos el cero de T y false
+	}
+	v := s.data[len(s.data)-1]      // Obtenemos el último elemento (cima)
+	s.data = s.data[:len(s.data)-1] // Reducimos el slice para eliminar el último elemento
+	return v, true                  // Devolvemos el valor extraído y true
 }
 
 func (s *Stack[T]) Peek() (T, bool) { // Método Peek: mira el último elemento sin quitarlo
@@ -29,7 +34,7 @@ func (s *Stack[T]) Peek() (T, bool) { // Método Peek: mira el último elemento 
 func (s *Stack[T]) Len() int      { return len(s.data) }      // Len: cantidad de elementos actuales
 func (s *Stack[T]) IsEmpty() bool { return len(s.data) == 0 } // IsEmpty: true si no hay elementos
 func (s *Stack[T]) Clear()        { s.data = nil }            // Clear: libera la referencia al slice para que el GC recupere memoria
-*/
+
 // ===== Queue (FIFO) =====
 
 // Implementación simple basada en slice con índice head amortizando O(1) en dequeue.
@@ -69,7 +74,7 @@ func (q *Queue[T]) IsEmpty() bool { return q.Len() == 0 }         // IsEmpty: tr
 func (q *Queue[T]) Clear()        { q.data, q.head = nil, 0 }     // Clear: liberamos referencia y reiniciamos head
 
 // ===== Dictionary (Map wrapper) =====
-// En Go ya existe map; aquí hacemos un “wrapper” con métodos básicos.
+// En Go ya existe map como built-in. Aquí hacemos un “wrapper” con métodos básicos.
 type Dict[K comparable, V any] struct { // Dict genérico con K comparable (requisito, hay types que no son comparables en golang) y V cualquiera
 	m map[K]V // El almacenamiento interno es un map nativo de Go
 }
@@ -130,26 +135,26 @@ func (d *Dict[K, V]) Range(f func(K, V) bool) { // Range: recorre pares y permit
 func main() {
 	fmt.Println("main function")
 	fmt.Println("Stack")
-	/* 	// Stack demo
-	   	var s Stack[int]                // Declaramos un Stack de enteros (inicia con slice nil pero usable)
-	   	s.Push(10)                      // Insertamos 10
-	   	s.Push(20)                      // Insertamos 20
-	   	top, _ := s.Peek()              // Vemos el tope sin quitarlo
-	   	fmt.Println("stack peek:", top) // Imprimimos el tope (esperado 20)
-	   	for !s.IsEmpty() {              // Mientras el stack no esté vacío
-	   		v, _ := s.Pop()              // Sacamos el elemento superior
-	   		fmt.Println("stack pop:", v) // Mostramos el elemento sacado
-	   	} */
+	// Stack demo
+	var s Stack[int]                // Declaramos un Stack de enteros (inicia con slice nil pero usable)
+	s.Push(10)                      // Insertamos 10
+	s.Push(20)                      // Insertamos 20
+	top, _ := s.Peek()              // Vemos el tope sin quitarlo
+	fmt.Println("stack peek:", top) // Imprimimos el tope (esperado 20)
+	for !s.IsEmpty() {              // Mientras el stack no esté vacío
+		v, _ := s.Pop()              // Sacamos el elemento superior
+		fmt.Println("stack pop:", v) // Mostramos el elemento sacado
+	}
 
 	fmt.Println("Queue")
 	// Queue demo
 	var q Queue[string]               // Declaramos una Queue de strings
-	q.Enqueue("a")                    // Encolamos "a"
-	q.Enqueue("b")                    // Encolamos "b"
+	q.Enqueue("a")                    // Enqueue "a"
+	q.Enqueue("b")                    // Enqueue "b"
 	front, _ := q.Peek()              // Miramos el frente sin extraer
 	fmt.Println("queue peek:", front) // Imprimimos el frente (esperado "a")
 	for !q.IsEmpty() {                // Mientras haya elementos en la cola
-		v, _ := q.Dequeue()              // Desencolamos el primero
+		v, _ := q.Dequeue()              // Dequeue el primero
 		fmt.Println("queue dequeue:", v) // Imprimimos el valor extraído
 	}
 	fmt.Println("Dictionary")
