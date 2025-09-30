@@ -32,17 +32,17 @@ func main() {
 	}
 	fmt.Println("Dictionary")
 	// Dict demo
-	d := NewDict[string, int]()        // Creamos un Dict(diccionario) con claves string y valores int
-	d.Set("manzana", 3)                // Asignamos "manzana" -> 3
-	d.Set("pera", 5)                   // Asignamos "pera" -> 5
-	if v, ok := d.Get("manzana"); ok { // Intentamos obtener "manzana"
-		fmt.Println("Cantidad de manzana:", v) // Imprimimos el valor (esperado 3)
+	d := NewDict[string, int]()      // Creamos un Dict(diccionario) con claves string y valores int
+	d.Set("apple", 3)                // Asignamos "manzana" -> 3
+	d.Set("pear", 5)                 // Asignamos "pera" -> 5
+	if v, ok := d.Get("apple"); ok { // Intentamos obtener "manzana"
+		fmt.Println("Apple Quantity:", v) // Imprimimos el valor (esperado 3)
 	}
-	fmt.Println("dict tiene sandia?", d.Has("sandia")) // Consultamos si existe "sandia" (esperado false)
-	fmt.Println("dict len:", d.Len())                  // Imprimimos la cantidad de entradas (esperado 2)
-	fmt.Println("keys:", d.Keys())                     // Mostramos las claves
-	fmt.Println("values:", d.Values())                 // Mostramos los valores
-	d.Range(func(k string, v int) bool {               // Recorremos con un callback que siempre devuelve true
+	fmt.Println("dict tiene watermelon?", d.Has("watermelon")) // Consultamos si existe "sandia" (esperado false)
+	fmt.Println("dict len:", d.Len())                          // Imprimimos la cantidad de entradas (esperado 2)
+	fmt.Println("keys:", d.Keys())                             // Mostramos las claves
+	fmt.Println("values:", d.Values())                         // Mostramos los valores
+	d.Range(func(k string, v int) bool {                       // Recorremos con un callback que siempre devuelve true
 		fmt.Printf("%s -> %d\n", k, v) // Imprimimos cada par clave-valor
 		return true                    // Continuamos hasta terminar
 	})
