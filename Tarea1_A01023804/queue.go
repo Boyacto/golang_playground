@@ -1,56 +1,38 @@
 package main // El paquete principal: punto de entrada del programa
+
 // ===== Queue (FIFO) =====
-
-// Queue implementa una cola FIFO genérica usando slice con índice head.
-type Queue[T any] struct { // Tipo genérico con parámetro T
-	data []T // data almacena todos los elementos en un slice
-	head int // head apunta al índice del primer elemento válido (frente)
+// Implementación simple basada en slice con índice head amortizando O(1) en dequeue.
+type Queue[T any] struct { // Definimos Queue genérica de T
+	data []T // Slice de T para datos
+	head int // Índice del primer elemento válido (frente)
 }
 
-// Enqueue agrega un elemento al final de la cola.
-func (q *Queue[T]) Enqueue(v T) { // Receptor puntero para mutar estado
-	q.data = append(q.data, v) // insertamos v al final del slice
+func (q *Queue[T]) Enqueue(v T) { // Enqueue: agrega al final (cola)
+	q.data = append(q.data, v) // Usamos append para insertar
 }
 
-// Dequeue quita y devuelve el elemento del frente; bool indica éxito.
-func (q *Queue[T]) Dequeue() (T, bool) { // Retorna (valor, ok) para manejo de vacío
-	var zero T       // valor cero de T
-	if q.IsEmpty() { // si no hay elementos útiles
-		return zero, false // no se puede extraer, devolvemos zero, false
+func (q *Queue[T]) Dequeue() (T, bool) { // Dequeue: extrae el primer elemento (bool indica éxito)
+	var zero T       // Valor cero de T para el caso vacío
+	if q.IsEmpty() { // Si la cola está vacía
+		return zero, false // No hay nada que devolver
 	}
-	v := q.data[q.head] // tomamos el elemento en la posición head (frente)
-	q.head++            // avanzamos head para “consumir” ese elemento
-
-	// Para evitar retener memoria innecesaria, compactamos si ya consumimos más de la mitad
-	if q.head > len(q.data)/2 { // condición de compactación para amortizar costo
-		q.data = append([]T(nil), q.data[q.head:]...) // copiamos la porción útil a un slice nuevo
-		q.head = 0                                    // reseteamos head al inicio del slice
+	v := q.data[q.head] // Tomamos el elemento al frente (posición head)
+	q.head++            // Avanzamos el índice head para “consumir” ese elemento
+	// Si ya consumimos más de la mitad, compactamos para liberar memoria retenida
+	if q.head > len(q.data)/2 { // Condición de compactación
+		q.data = append([]T(nil), q.data[q.head:]...) // Copiamos los elementos restantes a un nuevo slice
+		q.head = 0                                    // Reiniciamos head porque ahora el primer elemento está en índice 0
 	}
-
-	return v, true // devolvemos el valor y ok=true
+	return v, true // Devolvemos el valor dequeued y true
 }
-
-// Peek devuelve el elemento del frente sin extraerlo.
-func (q *Queue[T]) Peek() (T, bool) { // Mismo patrón (valor, ok)
-	var zero T       // valor cero de T
-	if q.IsEmpty() { // si no hay elementos
-		return zero, false // no se puede mirar, devolvemos zero, false
+func (q *Queue[T]) Peek() (T, bool) { // Peek: mira el frente sin quitarlo
+	var zero T       // Valor cero de T si está vacía
+	if q.IsEmpty() { // Si no hay elementos
+		return zero, false // Indicamos vacío
 	}
-	return q.data[q.head], true // devolvemos el elemento al frente y ok=true
+	return q.data[q.head], true // Devolvemos el elemento en el frente y true
 }
 
-// Len devuelve cuántos elementos hay disponibles en la cola.
-func (q *Queue[T]) Len() int { // cálculo basado en head
-	return len(q.data) - q.head // total almacenado menos los ya consumidos
-}
-
-// IsEmpty indica si la cola no tiene elementos.
-func (q *Queue[T]) IsEmpty() bool { // true si Len()==0
-	return q.Len() == 0 // reutilizamos Len()
-}
-
-// Clear borra el contenido para que el GC pueda liberar memoria.
-func (q *Queue[T]) Clear() { // reset completo
-	q.data = nil // soltamos referencia del slice
-	q.head = 0   // reiniciamos head
-}
+func (q *Queue[T]) Len() int      { return len(q.data) - q.head } // Len: cantidad efectiva = total - consumidos
+func (q *Queue[T]) IsEmpty() bool { return q.Len() == 0 }         // IsEmpty: true si Len es 0
+func (q *Queue[T]) Clear()        { q.data, q.head = nil, 0 }     // Clear: liberamos referencia y reiniciamos head
