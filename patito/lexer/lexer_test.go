@@ -7,20 +7,27 @@ import (
 )
 
 func TestNextToken(t *testing.T) {
-	input := `=+(){},;`
+	input := `program test ; var x : int ; main { x = 10 ; } end`
 
 	tests := []struct {
 		expectedType    token.TokenType
 		expectedLiteral string
 	}{
-		{token.ASSIGN, "="},
-		{token.PLUS, "+"},
-		{token.LPAREN, "("},
-		{token.RPAREN, ")"},
-		{token.LBRACE, "{"},
-		{token.RBRACE, "}"},
-		{token.COMMA, ","},
+		{token.PROGRAM, "program"},
+		{token.IDENT, "test"},
 		{token.SEMICOLON, ";"},
+		{token.VAR, "var"},
+		{token.IDENT, "x"},
+		{token.COLON, ":"},
+		{token.INT, "int"},
+		{token.SEMICOLON, ";"},
+		{token.MAIN, "main"},
+		{token.LBRACE, "{"},
+		{token.IDENT, "x"},
+		{token.ASSIGN, "="},
+		{token.INT_TYPE, "10"},
+		{token.SEMICOLON, ";"},
+		{token.RBRACE, "{"},
 		{token.EOF, ""},
 	}
 

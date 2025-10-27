@@ -1,6 +1,6 @@
 package lexer
 
-import "./token"
+import "patito/token"
 
 type Lexer struct {
 	input        string
@@ -33,6 +33,8 @@ func (l *Lexer) NextToken() token.Token {
 		tok = newToken(token.ASSIGN, l.ch)
 	case ';':
 		tok = newToken(token.SEMICOLON, l.ch)
+	case ':':
+		tok = newToken(token.COLON, l.ch)
 	case '(':
 		tok = newToken(token.LPAREN, l.ch)
 	case ')':
