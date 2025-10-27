@@ -12,10 +12,10 @@ const (
 	EOF     = "EOF"
 
 	// Identifiers + literals
-	IDENT  = "IDENT"  // add, foobar, x, y, ...
-	INT    = "INT"    // 1343456
-	FLOAT  = "FLOAT"  // 12.12
-	STRING = "STRING" // "Hola"
+	IDENT       = "IDENT"  // add, foobar, x, y, ...
+	INT_TYPE    = "INT"    // 1343456
+	FLOAT_TYPE  = "FLOAT"  // 12.12
+	STRING_TYPE = "STRING" // "Hola"
 
 	// Assignment operator
 	ASSIGN = "="
@@ -37,6 +37,7 @@ const (
 	// Delimiters
 	COMMA     = ","
 	SEMICOLON = ";"
+	COLON     = ":"
 	LPAREN    = "("
 	RPAREN    = ")"
 	LBRACE    = "{"
@@ -45,16 +46,38 @@ const (
 	RBRACKET  = "]"
 
 	// Keywords
-	PROGRAM    = "program"
-	MAIN       = "main"
-	END        = "end"
-	VAR        = "var"
-	VOID       = "void"
-	PRINT      = "print"
-	IF         = "if"
-	ELSE       = "else"
-	WHILE      = "while"
-	DO         = "do"
-	FLOAT_TYPE = "float"
-	INT_TYPE   = "int"
+	PROGRAM = "program"
+	MAIN    = "main"
+	END     = "end"
+	VAR     = "var"
+	VOID    = "void"
+	PRINT   = "print"
+	IF      = "if"
+	ELSE    = "else"
+	WHILE   = "while"
+	DO      = "do"
+	FLOAT   = "float"
+	INT     = "int"
 )
+
+var keywords = map[string]TokenType{
+	"program": PROGRAM,
+	"main":    MAIN,
+	"end":     END,
+	"var":     VAR,
+	"void":    VOID,
+	"print":   PRINT,
+	"if":      IF,
+	"else":    ELSE,
+	"while":   WHILE,
+	"do":      DO,
+	"float":   FLOAT,
+	"int":     INT,
+}
+
+func LookupIdent(ident string) TokenType {
+	if tok, ok := keywords[ident]; ok {
+		return tok
+	}
+	return IDENT
+}

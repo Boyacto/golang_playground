@@ -27,7 +27,8 @@ func TestNextToken(t *testing.T) {
 		{token.ASSIGN, "="},
 		{token.INT_TYPE, "10"},
 		{token.SEMICOLON, ";"},
-		{token.RBRACE, "{"},
+		{token.RBRACE, "}"},
+		{token.END, "end"},
 		{token.EOF, ""},
 	}
 
