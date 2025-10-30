@@ -139,16 +139,40 @@ func (l *Lexer) readIdentifier() string {
 	return l.input[start:l.currentIndex]
 }
 
-func (l *Lexer) readNumber() string {
-	currIndex := l.currentIndex
+func (l *Lexer) readNumber() (literal string, isFloat bool) {
+	start := l.currentIndex
 	for isDigit(l.ch) {
 		l.readChar()
 	}
-	return l.input[currIndex:l.currentIndex]
+	// fractional part: '.' followed by at least one digit
+	if l.ch == '.' && isDigit(l.peekChar()) {
+		isFloat = true
+		l.readChar() // consume '.'
+		for isDigit(l.ch) {
+			l.readChar()
+		}
+	}
+	return l.input[start:l.currentIndex], isFloat
+}
+func (l *Lexer) readString() string {
+	// current l.ch == '"'
+	l.readChar() // consume opening quote
+	start := l.currentIndex
+	for l.ch != '"' && l.ch != 0 {
+		// simple version; no escapes
+		l.readChar()
+	}
+	lit := l.input[start:l.currentIndex]
+	if l.ch == '"' {
+		l.readChar() // consume closing quote
+	}
+	return lit
 }
 
-func isLetter(ch byte) bool { // kept for backward compatibility; includes '_'
-	return 'A' <= ch && ch <= 'Z' || 'a' <= ch && ch <= 'z' || ch == '_'
+func isLetter(ch byte) bool {
+	return (ch >= 'A' && ch <= 'Z') ||
+		(ch >= 'a' && ch <= 'z') ||
+		ch == '_'
 }
 
 func isAlpha(ch byte) bool { // letters only, no underscore
