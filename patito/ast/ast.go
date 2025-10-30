@@ -25,6 +25,50 @@ type Expression interface {
 	expressionNode() // Marker method to distinguish expressions from statements
 }
 
+// ---------- dIentifiers ----------
+
+type Identifier struct {
+	Value string
+}
+
+func (i *Identifier) expressionNode()      {}
+func (i *Identifier) TokenLiteral() string { return i.Value }
+
+type IntegerLiteral struct {
+	Value int64 // Idk why but int in go varies between 32 and 64 bit (maybe because it is for system programming.)
+}
+
+func (il *IntegerLiteral) expressionNode()      {}
+func (il *IntegerLiteral) TokenLiteral() string { return "int" }
+
+type FloatLiteral struct {
+	Value float64
+}
+
+func (fl *FloatLiteral) expressionNode()      {}
+func (fl *FloatLiteral) TokenLiteral() string { return "float" }
+
+// ---------- Expression ----------
+
+type InfixExpression struct { // 이항연산표현식노드용
+	Left     Expression
+	Operator string
+	Right    Expression
+}
+
+func (ie *InfixExpression) expressionNode()      {}
+func (ie *InfixExpression) TokenLiteral() string { return ie.Operator }
+
+type CallExpression struct {
+	Function  *Identifier
+	Arguments []Expression
+}
+
+func (ce *CallExpression) expressionNode()      {}
+func (ce *CallExpression) TokenLiteral() string { return ce.Function.Value }
+
+// ---------- Statements ----------
+
 // Assignment: ID = Expression ;
 type AssignStatement struct {
 	Name  *Identifier
@@ -60,46 +104,6 @@ type WhileStatement struct {
 
 func (ws *WhileStatement) statementNode()       {}
 func (ws *WhileStatement) TokenLiteral() string { return "while" }
-
-// ---------- Expressions ----------
-
-type Identifier struct {
-	Value string
-}
-
-func (i *Identifier) expressionNode()      {}
-func (i *Identifier) TokenLiteral() string { return i.Value }
-
-type IntegerLiteral struct {
-	Value int64 // Idk why but int in go varies between 32 and 64 bit (maybe because it is for system programming.)
-}
-
-func (il *IntegerLiteral) expressionNode()      {}
-func (il *IntegerLiteral) TokenLiteral() string { return "int" }
-
-type FloatLiteral struct {
-	Value float64
-}
-
-func (fl *FloatLiteral) expressionNode()      {}
-func (fl *FloatLiteral) TokenLiteral() string { return "float" }
-
-type InfixExpression struct {
-	Left     Expression
-	Operator string
-	Right    Expression
-}
-
-func (ie *InfixExpression) expressionNode()      {}
-func (ie *InfixExpression) TokenLiteral() string { return ie.Operator }
-
-type CallExpression struct {
-	Function  *Identifier
-	Arguments []Expression
-}
-
-func (ce *CallExpression) expressionNode()      {}
-func (ce *CallExpression) TokenLiteral() string { return ce.Function.Value }
 
 // ---------- Blocks ----------
 
