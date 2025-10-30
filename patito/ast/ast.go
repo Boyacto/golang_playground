@@ -15,41 +15,97 @@ type Node interface {
 	TokenLiteral() string // Returns the literal value of the token this node is associated with
 }
 
-// Statement represents a statement in the program.
-// In Patito, statements are instructions that perform actions but don't produce values.
-// Examples: variable declarations, assignments, print statements, control flow (if/while).
-//
-// The statementNode() method is a marker method (not meant to be called) that ensures
-// only statement types can be assigned to Statement variables, providing compile-time type safety.
 type Statement interface {
 	Node
 	statementNode() // Marker method to distinguish statements from expressions
 }
 
-// Expression represents an expression in the program.
-// In Patito, expressions are constructs that evaluate to values.
-// Examples: arithmetic operations (1 + 2), identifiers (x), literals (42, "hello"), comparisons (x < 10).
-//
-// The expressionNode() method is a marker method (not meant to be called) that ensures
-// only expression types can be assigned to Expression variables, providing compile-time type safety.
 type Expression interface {
 	Node
 	expressionNode() // Marker method to distinguish expressions from statements
 }
 
-// Program is the root node of every AST produced by the parser.
-// It represents the entire source file and contains all top-level statements.
-// Every valid Patito program is represented as a Program containing a slice of Statements.
-type Program struct {
-	Statements []Statement // All statements in the program, in order of appearance
+// Assignment: ID = Expression ;
+type AssignStatement struct {
+	Name  *Identifier
+	Value Expression
 }
 
-// TokenLiteral returns the token literal of the first statement in the program.
-// This is primarily used for debugging and error reporting.
-// If the program is empty, it returns an empty string.
-func (p *Program) TokenLiteral() string {
-	if len(p.Statements) > 0 {
-		return p.Statements[0].TokenLiteral()
-	}
-	return ""
+func (as *AssignStatement) statementNode()       {}
+func (as *AssignStatement) TokenLiteral() string { return as.Name.Value }
+
+// Print: print(ExpressionList)
+type PrintStatement struct {
+	Expressions []Expression
 }
+
+func (ps *PrintStatement) statementNode()       {}
+func (ps *PrintStatement) TokenLiteral() string { return "print" }
+
+// If / Else
+type IfStatement struct {
+	Condition   Expression
+	Consequence *BlockStatement
+	Alternative *BlockStatement
+}
+
+func (is *IfStatement) statementNode()       {}
+func (is *IfStatement) TokenLiteral() string { return "if" }
+
+// While
+type WhileStatement struct {
+	Condition Expression
+	Body      *BlockStatement
+}
+
+func (ws *WhileStatement) statementNode()       {}
+func (ws *WhileStatement) TokenLiteral() string { return "while" }
+
+// ---------- Expressions ----------
+
+type Identifier struct {
+	Value string
+}
+
+func (i *Identifier) expressionNode()      {}
+func (i *Identifier) TokenLiteral() string { return i.Value }
+
+type IntegerLiteral struct {
+	Value int64 // Idk why but int in go varies between 32 and 64 bit (maybe because it is for system programming.)
+}
+
+func (il *IntegerLiteral) expressionNode()      {}
+func (il *IntegerLiteral) TokenLiteral() string { return "int" }
+
+type FloatLiteral struct {
+	Value float64
+}
+
+func (fl *FloatLiteral) expressionNode()      {}
+func (fl *FloatLiteral) TokenLiteral() string { return "float" }
+
+type InfixExpression struct {
+	Left     Expression
+	Operator string
+	Right    Expression
+}
+
+func (ie *InfixExpression) expressionNode()      {}
+func (ie *InfixExpression) TokenLiteral() string { return ie.Operator }
+
+type CallExpression struct {
+	Function  *Identifier
+	Arguments []Expression
+}
+
+func (ce *CallExpression) expressionNode()      {}
+func (ce *CallExpression) TokenLiteral() string { return ce.Function.Value }
+
+// ---------- Blocks ----------
+
+type BlockStatement struct {
+	Statements []Statement
+}
+
+func (bs *BlockStatement) statementNode()       {}
+func (bs *BlockStatement) TokenLiteral() string { return "{" }
