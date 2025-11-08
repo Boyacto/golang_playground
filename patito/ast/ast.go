@@ -113,3 +113,59 @@ type BlockStatement struct {
 
 func (bs *BlockStatement) statementNode()       {}
 func (bs *BlockStatement) TokenLiteral() string { return "{" }
+
+// ---------- Program Structure ----------
+
+// Program represents the entire Patito program
+type Program struct {
+	Name         string              // Program name
+	GlobalVars   []*VarDecl          // Global variable declarations
+	Functions    []*FunctionDecl     // Function declarations
+	MainBody     *BlockStatement     // Main block
+	Decls        []Statement         // Generic declarations (for compatibility)
+}
+
+func (p *Program) TokenLiteral() string { return "program" }
+
+// VarDecl represents a variable declaration
+type VarDecl struct {
+	Names []string  // Variable names (can declare multiple: x, y, z : int)
+	Type  *TypeSpec // Variable type
+}
+
+func (vd *VarDecl) statementNode()       {}
+func (vd *VarDecl) TokenLiteral() string { return "var" }
+
+// TypeSpec represents a type specification
+type TypeSpec struct {
+	Name string // "int", "float", or "void"
+}
+
+func (ts *TypeSpec) expressionNode()      {}
+func (ts *TypeSpec) TokenLiteral() string { return ts.Name }
+
+// Parameter represents a function parameter
+type ParamDecl struct {
+	Name string
+	Type *TypeSpec
+}
+
+// FunctionDecl represents a function declaration
+type FunctionDecl struct {
+	Name       string          // Function name
+	Parameters []*ParamDecl    // Function parameters
+	LocalVars  []*VarDecl      // Local variable declarations
+	Body       *BlockStatement // Function body
+}
+
+func (fd *FunctionDecl) statementNode()       {}
+func (fd *FunctionDecl) TokenLiteral() string { return fd.Name }
+
+// ---------- Additional Literals ----------
+
+type StringLiteral struct {
+	Value string
+}
+
+func (sl *StringLiteral) expressionNode()      {}
+func (sl *StringLiteral) TokenLiteral() string { return "string" }
